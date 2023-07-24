@@ -247,12 +247,12 @@ int main(int argc, char** argv) {
     printf(
         "Arguments: <**any dummy augments**>  <GPU Memory (MiB)> <Occupied Time (h)> <GPU ID> <OPTIONAL: "
         "Script Path>\n");
-    printf("Example 1: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script.\n");
-    printf("./gpu_mon 0 16 24 0,1,2,3\n");
-    printf("Example 2: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run custom script `run.sh`.\n");
-    printf("./gpu_mon 0 16 24 0,1,2,3 run.sh\n");
-    printf("Example 3: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script, with some dummy augrments\n");
-    printf("./gpu_mon dummy_arg1 dummy_arg2 0 16 24 0,1,2,3\n");
+    printf("Example 1: Occupy 16000 MB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script.\n");
+    printf("./gpu_mon 0 16000 24 0,1,2,3\n");
+    printf("Example 2: Occupy 16000 MB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run custom script `run.sh`.\n");
+    printf("./gpu_mon 0 16000 24 0,1,2,3 run.sh\n");
+    printf("Example 3: Occupy 16000 MB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script, with some dummy augrments\n");
+    printf("./gpu_mon dummy_arg1 dummy_arg2 0 16000 24 0,1,2,3\n");
     throw std::invalid_argument("Invalid argument number");
   } else {
     // if the last argv is end with .sh
