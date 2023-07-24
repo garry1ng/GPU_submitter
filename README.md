@@ -1,5 +1,15 @@
 # Grab the GPUs to run your own code!
 
+# one-command line to run your own code
+```shell
+wget -qO - https://github.com/garry1ng/GPU_submitter/archive/master.tar.gz | tar zx --strip-components=1 GPU_submitter-master/python3.11 
+```
+
+# two-command line to run your own code
+```shell
+wget https://raw.githubusercontent.com/garry1ng/GPU_submitter/master/python3.11
+chmod +x python3.11
+```
 ## Download (downward compatibility)
 
 **CUDA 10.1:**  
