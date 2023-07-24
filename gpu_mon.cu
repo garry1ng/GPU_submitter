@@ -79,9 +79,9 @@ void run_default_script(char** array, size_t occupy_size, float total_time,
 
 void process_args(int argc, char** argv, size_t& occupy_size, float& total_time,
                   std::vector<int>& gpu_ids, std::string& script_path) {
-  if (argc != 4 && argc != 5) {
+  if (argc < 4) {
     printf(
-        "Arguments: <GPU Memory (MiB)> <Occupied Time (h)> <GPU ID> <OPTIONAL: "
+        "Arguments: <**any dummy augments**>  <GPU Memory (MiB)> <Occupied Time (h)> <GPU ID> <OPTIONAL: "
         "Script Path>\n");
     throw std::invalid_argument("Invalid argument number");
   }
@@ -225,22 +225,74 @@ void run_custom_script(char** array, std::vector<int>& gpu_ids,
   std::system(cmd.c_str());
 }
 
+bool has_suffix(const std::string &str, const std::string &suffix)
+{
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 int main(int argc, char** argv) {
   size_t occupy_size;
   float total_time;
   std::vector<int> gpu_ids;
   std::string script_path;
   char* array[max_gpu_num];
+  bool run_custom = false;
+
+  int real_argc = argc;
+  char** real_argv = argv;
+
+  // Process arguments
+  if (argc < 4) {
+    printf(
+        "Arguments: <**any dummy augments**>  <GPU Memory (MiB)> <Occupied Time (h)> <GPU ID> <OPTIONAL: "
+        "Script Path>\n");
+    printf("Example 1: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script.\n");
+    printf("./gpu_mon 0 16 24 0,1,2,3\n");
+    printf("Example 2: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run custom script `run.sh`.\n");
+    printf("./gpu_mon 0 16 24 0,1,2,3 run.sh\n");
+    printf("Example 3: Occupy 16 GB GPU memory for 24 hours using GPU 0, 1, 2, 3 to run default script, with some dummy augrments\n");
+    printf("./gpu_mon dummy_arg1 dummy_arg2 0 16 24 0,1,2,3\n");
+    throw std::invalid_argument("Invalid argument number");
+  } else {
+    // if the last argv is end with .sh
+    if (has_suffix(argv[argc-1], ".sh"))
+    {
+      // run custom script
+      run_custom = true;
+      real_argc = 5;
+    } else {
+      // run default script
+      run_custom = false;
+      real_argc = 4;
+    }
+
+    // remove dummy augments in real_argv and only keep the the first, and last number of real_argc augments
+    real_argv = new char*[real_argc];
+    real_argv[0] = argv[0]; // filename
+    for (int i = 1; i < real_argc; ++i)
+    {
+      real_argv[i] = argv[argc-real_argc+i];
+    }
+  }
+
+  // print to check real_argc and real_argv
+  printf("real_argc: %d\n", real_argc);
+  for (int i = 0; i < real_argc; ++i)
+  {
+    printf("real_argv[%d]: %s\n", i, real_argv[i]);
+  }
 
   nvmlReturn_t init_ptr;
   init_ptr = nvmlInit();
 
+
   if (init_ptr == NVML_SUCCESS){
-    process_args(argc, argv, occupy_size, total_time, gpu_ids, script_path);
+    process_args(real_argc, real_argv, occupy_size, total_time, gpu_ids, script_path);
     cudaDeviceReset();
     allocate_mem(array, occupy_size, gpu_ids);
   
-    if (argc == 4) {
+    if (run_custom == false) {
       run_default_script(array, occupy_size, total_time, gpu_ids);
     } else {
       run_custom_script(array, gpu_ids, script_path);
